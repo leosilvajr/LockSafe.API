@@ -16,50 +16,41 @@ namespace LockSafe.API.Controllers
             _context = context;
         }
 
-        // GET: api/Users
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
+        public ActionResult<IEnumerable<Users>> GetUsers()
         {
-            var users = await _context.Users.ToListAsync();
+            var users = new List<Users>
+                    {
+                        new Users
+                        {
+                            Id = 1,
+                            FullName = "Test User 1",
+                            UserName = "testuser1",
+                            Email = "test1@example.com",
+                            Password = "password1",
+                            ProfileImageUrl = "https://example.com/image1.png"
+                        },
+                        new Users
+                        {
+                            Id = 2,
+                            FullName = "Test User 2",
+                            UserName = "testuser2",
+                            Email = "test2@example.com",
+                            Password = "password2",
+                            ProfileImageUrl = "https://example.com/image2.png"
+                        },
+                        new Users
+                        {
+                            Id = 3,
+                            FullName = "Test User 3",
+                            UserName = "testuser3",
+                            Email = "test3@example.com",
+                            Password = "password3",
+                            ProfileImageUrl = "https://example.com/image3.png"
+                        }
+                    };
+
             return Ok(users);
-        }
-
-        // GET: api/Users/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Users>> GetUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound(new { message = "Usuário não encontrado." });
-            }
-
-            return Ok(user);
-        }
-
-        // POST: api/Users
-        [HttpPost]
-        public async Task<ActionResult<Users>> CreateUser([FromBody] Users user)
-        {
-            if (user == null)
-            {
-                return BadRequest(new { message = "Dados inválidos." });
-            }
-
-            // Validação opcional para checar se o e-mail já está em uso
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == user.Email);
-            if (emailExists)
-            {
-                return Conflict(new { message = "E-mail já está em uso." });
-            }
-
-            // Adiciona o usuário no banco de dados
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            // Retorna o usuário criado
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
     }
 }
