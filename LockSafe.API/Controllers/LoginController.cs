@@ -2,6 +2,7 @@
 using LockSafe.Application.DTOs.LockSafe.Application.DTOs;
 using LockSafe.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,32 +25,46 @@ namespace LockSafe.API.Controllers
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginDto loginDto)
         {
-            if (loginDto.UserName == "string" && loginDto.Password == "string")
+            try
             {
-                var claims = new[]
+                if (loginDto.UserName == "string" && loginDto.Password == "string")
                 {
-                    new Claim(ClaimTypes.Name, loginDto.UserName),
-                    new Claim(ClaimTypes.Role, "Admin")
-                };
+                    var claims = new[]
+                    {
+                new Claim(ClaimTypes.Name, loginDto.UserName),
+                new Claim(ClaimTypes.Role, "Admin")
+            };
 
-                // Gerar o JWT
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                    // Gerar o JWT
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                var token = new JwtSecurityToken(
-                    issuer: _jwtSettings.Issuer,
-                    audience: _jwtSettings.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
-                    signingCredentials: creds
-                );
+                    var token = new JwtSecurityToken(
+                        issuer: _jwtSettings.Issuer,
+                        audience: _jwtSettings.Audience,
+                        claims: claims,
+                        expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
+                        signingCredentials: creds
+                    );
 
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
-                return Ok(new { Usuario = loginDto.UserName, Token = tokenString });
+                    return Ok(new { Usuario = loginDto.UserName, Token = tokenString });
+                }
+
+                return Unauthorized();
             }
-
-            return Unauthorized();
+            catch (SqlException sqlEx)
+            {
+                // Erro de conexão com o banco de dados
+                return StatusCode(500, new { mensagem = "Erro de conexão com o banco de dados.", erro = sqlEx.Message });
+            }
+            catch (Exception ex)
+            {
+                // Outros erros inesperados
+                return StatusCode(500, new { mensagem = "Erro inesperado.", erro = ex.Message });
+            }
         }
+
     }
 }
