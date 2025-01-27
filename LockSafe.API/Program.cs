@@ -31,7 +31,6 @@ builder.Services.AddScoped<IUserService, UserService>();
 // Repositórios
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-
 // Configurações do JwtSettings
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
@@ -52,6 +51,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+// Configurar o Kestrel para escutar em todas as interfaces na porta 5000
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5000); // Escutar na porta 5000 em todas as interfaces
+});
 
 var app = builder.Build();
 
