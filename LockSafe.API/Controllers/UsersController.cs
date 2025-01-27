@@ -1,7 +1,6 @@
-﻿using LockSafe.API.Context;
-using LockSafe.API.Model;
+﻿using LockSafe.Application.DTOs;
+using LockSafe.Application.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LockSafe.API.Controllers
 {
@@ -9,48 +8,21 @@ namespace LockSafe.API.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly LockSafeContext _context;
+        private readonly IUserService _userService;
 
-        public UsersController(LockSafeContext context)
+        public UsersController(IUserService userService)
         {
-            _context = context;
+            _userService = userService;
         }
 
-        [HttpGet]
-        public ActionResult<IEnumerable<Users>> GetUsers()
+        [HttpPost]
+        public async Task<IActionResult> CreateUser([FromBody] UserCreateDTO userDto)
         {
-            var users = new List<Users>
-                    {
-                        new Users
-                        {
-                            Id = 1,
-                            FullName = "Test User 1",
-                            UserName = "testuser1",
-                            Email = "test1@example.com",
-                            Password = "password1",
-                            ProfileImageUrl = "https://example.com/image1.png"
-                        },
-                        new Users
-                        {
-                            Id = 2,
-                            FullName = "Test User 2",
-                            UserName = "testuser2",
-                            Email = "test2@example.com",
-                            Password = "password2",
-                            ProfileImageUrl = "https://example.com/image2.png"
-                        },
-                        new Users
-                        {
-                            Id = 3,
-                            FullName = "Test User 3",
-                            UserName = "testuser3",
-                            Email = "test3@example.com",
-                            Password = "password3",
-                            ProfileImageUrl = "https://example.com/image3.png"
-                        }
-                    };
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            return Ok(users);
+            await _userService.CreateUser(userDto);
+            return Ok("Usuário criado com sucesso!");
         }
     }
 }
