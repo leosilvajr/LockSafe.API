@@ -27,6 +27,7 @@ builder.Services.AddDbContext<LockSafeContext>(options =>
 
 // Serviços
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 // Repositórios
 builder.Services.AddScoped<IUserRepository, UserRepository>();

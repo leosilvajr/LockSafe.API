@@ -1,70 +1,28 @@
-﻿using LockSafe.Application.DTOs;
-using LockSafe.Application.DTOs.LockSafe.Application.DTOs;
-using LockSafe.Domain.Models;
+﻿using LockSafe.Application.DTOs.LockSafe.Application.DTOs;
+using LockSafe.Application.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
-namespace LockSafe.API.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class LoginController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class LoginController : ControllerBase
+    private readonly ILoginService _loginService;
+
+    public LoginController(ILoginService loginService)
     {
-        private readonly JwtSettings _jwtSettings;
+        _loginService = loginService;
+    }
 
-        public LoginController(IOptions<JwtSettings> jwtSettings)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        var result = await _loginService.Login(loginDto);
+
+        if (result == null)
         {
-            _jwtSettings = jwtSettings.Value;
+            return Unauthorized(new { Message = "Usuário ou senha inválidos." });
         }
 
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginDto loginDto)
-        {
-            try
-            {
-                if (loginDto.UserName == "string" && loginDto.Password == "string")
-                {
-                    var claims = new[]
-                    {
-                new Claim(ClaimTypes.Name, loginDto.UserName),
-                new Claim(ClaimTypes.Role, "Admin")
-            };
-
-                    // Gerar o JWT
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
-                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                    var token = new JwtSecurityToken(
-                        issuer: _jwtSettings.Issuer,
-                        audience: _jwtSettings.Audience,
-                        claims: claims,
-                        expires: DateTime.Now.AddMinutes(_jwtSettings.ExpirationMinutes),
-                        signingCredentials: creds
-                    );
-
-                    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-                    return Ok(new { Usuario = loginDto.UserName, Token = tokenString });
-                }
-
-                return Unauthorized();
-            }
-            catch (SqlException sqlEx)
-            {
-                // Erro de conexão com o banco de dados
-                return StatusCode(500, new { mensagem = "Erro de conexão com o banco de dados.", erro = sqlEx.Message });
-            }
-            catch (Exception ex)
-            {
-                // Outros erros inesperados
-                return StatusCode(500, new { mensagem = "Erro inesperado.", erro = ex.Message });
-            }
-        }
-
+        return Ok(result);
     }
 }
