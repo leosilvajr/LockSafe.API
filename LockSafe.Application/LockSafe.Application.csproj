@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LockSafe.Domain\LockSafe.Domain.csproj" />
     <ProjectReference Include="..\LockSafe.Infra\LockSafe.Infra.csproj" />
+    <ProjectReference Include="..\LockSafe.Shared\LockSafe.Shared.csproj" />
   </ItemGroup>
 
 </Project>

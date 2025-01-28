@@ -2,6 +2,11 @@
 using LockSafe.Application.Services.Interface;
 using LockSafe.Domain.Models;
 using LockSafe.Infra.Repositories.Interface;
+using System;
+using System.Security.Cryptography;
+using System.Text;
+using System.IO;
+using LockSafe.Application.Helpers;
 
 namespace LockSafe.Application.Services
 {
@@ -19,16 +24,14 @@ namespace LockSafe.Application.Services
         public async Task<PasswordDTO> CreatePasswordAsync(PasswordCreateDTO passwordDto, int userId)
         {
             // Mapear DTO para entidade Password
-            var password = new Password
-            {
-                Title = passwordDto.Title,
-                Description = passwordDto.Description,
-                Reference = passwordDto.Reference,
-                Account = passwordDto.Account,
-                PasswordValue = passwordDto.PasswordValue,
-                CreationDate = DateTime.Now,
-                ExpirationDate = passwordDto.ExpirationDate
-            };
+            var password = new Password();
+            password.Title = passwordDto.Title;
+            password.Description = passwordDto.Description;
+            password.Reference = passwordDto.Reference;
+            password.Account = passwordDto.Account;
+            password.PasswordValue = CriptografiaHelper.Criptografar(passwordDto.PasswordValue);
+            password.CreationDate = DateTime.Now;
+            password.ExpirationDate = passwordDto.ExpirationDate;
 
             // Salvar a senha no banco de dados
             var createdPassword = await _passwordRepository.AddAsync(password);
@@ -51,10 +54,17 @@ namespace LockSafe.Application.Services
                 Description = createdPassword.Description,
                 Reference = createdPassword.Reference,
                 Account = createdPassword.Account,
-                PasswordValue = createdPassword.PasswordValue,
+                PasswordValue = CriptografiaHelper.Criptografar(passwordDto.PasswordValue),
                 CreationDate = createdPassword.CreationDate,
                 ExpirationDate = createdPassword.ExpirationDate
             };
+        }
+
+
+        //Função para exibir a senha descriptografada, por exemplo, quando o usuário solicitar
+        public string GetDescryptedPassword(string senhaCriptografada)
+        {
+            return CriptografiaHelper.Descriptografar(senhaCriptografada);
         }
     }
 }
