@@ -1,11 +1,12 @@
 ﻿using LockSafe.Application.DTOs;
 using LockSafe.Application.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LockSafe.API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;

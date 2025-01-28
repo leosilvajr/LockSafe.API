@@ -31,7 +31,12 @@ namespace LockSafe.Infra.Context
                 .HasForeignKey(pa => pa.PasswordId) // FK para PasswordId
                 .OnDelete(DeleteBehavior.Restrict); // Restringir exclusão em cascata
 
-            // Configurar limites e validações adicionais para Users
+            // Ignorar as propriedades 'AssociatedPassword' e 'AssociatedUser' no modelo (não mapeadas)
+            modelBuilder.Entity<PasswordAllowance>()
+                .Ignore(pa => pa.AssociatedPassword)
+                .Ignore(pa => pa.AssociatedUser);
+
+            // Configuração de limites e validações adicionais para Users
             modelBuilder.Entity<Users>()
                 .Property(u => u.FullName)
                 .HasMaxLength(200)
@@ -51,7 +56,7 @@ namespace LockSafe.Infra.Context
                 .Property(u => u.Password)
                 .IsRequired();
 
-            // Configurar limites para Password
+            // Configuração de limites para Password
             modelBuilder.Entity<Password>()
                 .Property(p => p.Title)
                 .HasMaxLength(255)
@@ -64,12 +69,13 @@ namespace LockSafe.Infra.Context
 
             modelBuilder.Entity<Password>()
                 .Property(p => p.CreationDate)
-                .HasDefaultValueSql("GETDATE()"); // Configura valor padrão como data atual
+                .HasDefaultValueSql("GETDATE()"); // Valor padrão como data atual
 
             modelBuilder.Entity<Password>()
                 .Property(p => p.ExpirationDate)
                 .HasDefaultValueSql("DATEADD(YEAR, 1, GETDATE())"); // Expiração padrão de 1 ano
 
+            // Chamando o método base para finalizar a configuração
             base.OnModelCreating(modelBuilder);
         }
     }

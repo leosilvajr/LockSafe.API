@@ -38,15 +38,16 @@ public class LoginService : ILoginService
         };
     }
 
-    private string  GerarJwtToken(Users user)
+    private string GerarJwtToken(Users user)
     {
         // Criar os claims para o JWT
         var claims = new[]
         {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, "User") // Exemplo de role
-        };
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Adiciona o ID do usuário
+        new Claim(ClaimTypes.Name, user.UserName),               // Adiciona o nome do usuário
+        new Claim(ClaimTypes.Email, user.Email),                 // Adiciona o email do usuário
+        new Claim(ClaimTypes.Role, "User")                       // Adiciona a role (exemplo)
+    };
 
         // Gerar o JWT
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
@@ -62,4 +63,6 @@ public class LoginService : ILoginService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+
 }

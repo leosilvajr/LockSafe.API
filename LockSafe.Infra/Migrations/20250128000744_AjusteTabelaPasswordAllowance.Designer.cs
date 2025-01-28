@@ -4,6 +4,7 @@ using LockSafe.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LockSafe.Infra.Migrations
 {
     [DbContext(typeof(LockSafeContext))]
-    partial class LockSafeContextModelSnapshot : ModelSnapshot
+    [Migration("20250128000744_AjusteTabelaPasswordAllowance")]
+    partial class AjusteTabelaPasswordAllowance
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,10 +79,20 @@ namespace LockSafe.Infra.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(0);
 
+                    b.Property<int?>("AssociatedPasswordId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AssociatedUserId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("bit");
 
                     b.HasKey("UserId", "PasswordId");
+
+                    b.HasIndex("AssociatedPasswordId");
+
+                    b.HasIndex("AssociatedUserId");
 
                     b.HasIndex("PasswordId");
 
@@ -123,6 +136,14 @@ namespace LockSafe.Infra.Migrations
 
             modelBuilder.Entity("LockSafe.Domain.Models.PasswordAllowance", b =>
                 {
+                    b.HasOne("LockSafe.Domain.Models.Password", "AssociatedPassword")
+                        .WithMany()
+                        .HasForeignKey("AssociatedPasswordId");
+
+                    b.HasOne("LockSafe.Domain.Models.Users", "AssociatedUser")
+                        .WithMany()
+                        .HasForeignKey("AssociatedUserId");
+
                     b.HasOne("LockSafe.Domain.Models.Password", null)
                         .WithMany()
                         .HasForeignKey("PasswordId")
@@ -134,6 +155,10 @@ namespace LockSafe.Infra.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AssociatedPassword");
+
+                    b.Navigation("AssociatedUser");
                 });
 #pragma warning restore 612, 618
         }

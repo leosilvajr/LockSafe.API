@@ -1,9 +1,13 @@
 ﻿using LockSafe.Application.DTOs;
 using LockSafe.Application.Services.Interface;
+using LockSafe.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize] // Aplica a autenticação JWT a todos os métodos do controlador
 public class PasswordController : ControllerBase
 {
     private readonly IPasswordService _passwordService;
@@ -16,8 +20,8 @@ public class PasswordController : ControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreatePassword([FromBody] PasswordCreateDTO passwordDto)
     {
-        // Aqui vamos Precisar recuparar o Id do Usuario Autenticado para criar o registro de senha.
-        var userId = 0;
+        // Obter o ID do usuário logado a partir do token
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
 
         if (userId == 0)
             return Unauthorized(new { Message = "Usuário não autenticado." });

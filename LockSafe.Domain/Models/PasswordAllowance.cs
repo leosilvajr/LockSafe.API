@@ -17,7 +17,10 @@ namespace LockSafe.Domain.Models
         public bool IsAdmin { get; set; }
 
         // Relacionamentos de navegação
-        public virtual Password Password { get; set; } // Facilita acesso aos dados relacionados
-        public virtual Users Users { get; set; }
+        [NotMapped]  // Impede que essas propriedades sejam mapeadas para o banco de dados
+        public virtual Password AssociatedPassword { get; set; }
+
+        [NotMapped]  // Impede que essas propriedades sejam mapeadas para o banco de dados
+        public virtual Users AssociatedUser { get; set; }
     }
 }

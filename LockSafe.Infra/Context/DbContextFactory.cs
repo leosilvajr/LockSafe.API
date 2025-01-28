@@ -36,4 +36,13 @@ namespace LockSafe.Infra.Factories
      * 
      * Precisei instaslar o EntityFrameworkCore.Design no projeto LockSafe.API
      */
+
+
+    /*
+     Para realiZar Update na Tabela no Banco de Dados apos alteração no Model
+     dotnet ef migrations add AjusteTabelaPasswordAllowance2 --project C:\Git\LockSafe.API\LockSafe.Infra\LockSafe.Infra.csproj --startup-project C:\Git\LockSafe.API\LockSafe.API\LockSafe.API.csproj
+
+     dotnet ef database update --project C:\Git\LockSafe.API\LockSafe.Infra\LockSafe.Infra.csproj --startup-project C:\Git\LockSafe.API\LockSafe.API\LockSafe.API.csproj
+
+     */
 }
