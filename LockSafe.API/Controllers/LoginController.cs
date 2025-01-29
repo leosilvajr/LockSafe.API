@@ -25,4 +25,12 @@ public class LoginController : ControllerBase
 
         return Ok(result);
     }
+
+    [HttpDelete]
+    public async Task<IActionResult> Delete()
+    {
+        //CRIAR A SERVICE PARA ACESSAR A REPOSITORY DELETE
+        //await _loginService.Logout();
+        return Ok();
+    }
 }
