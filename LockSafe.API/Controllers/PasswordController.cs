@@ -1,6 +1,5 @@
 ﻿using LockSafe.Application.DTOs;
 using LockSafe.Application.Services.Interface;
-using LockSafe.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

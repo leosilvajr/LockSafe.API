@@ -26,6 +26,6 @@ namespace LockSafe.Domain.Models
         [DataType(DataType.Password)] // Indica que é uma senha
         public string Password { get; set; }
 
-        public string ProfileImageUrl { get; set; }
+        public string ProfileImageUrl { get; set; } = string.Empty;
     }
 }
