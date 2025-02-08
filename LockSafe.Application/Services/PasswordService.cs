@@ -1,12 +1,8 @@
 ﻿using LockSafe.Application.DTOs;
+using LockSafe.Application.Helpers;
 using LockSafe.Application.Services.Interface;
 using LockSafe.Domain.Models;
 using LockSafe.Infra.Repositories.Interface;
-using System;
-using System.Security.Cryptography;
-using System.Text;
-using System.IO;
-using LockSafe.Application.Helpers;
 
 namespace LockSafe.Application.Services
 {
